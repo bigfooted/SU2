@@ -248,6 +248,13 @@ public:
    */
   inline su2double *GetSecondary(unsigned long iPoint) final { return Secondary[iPoint]; }
 
+   /*!
+  * \brief Set all the primitive and secondary variables from the conserved vector.
+  */
+  bool Cons2PrimVar(su2double *U, su2double *V, su2double *dPdU,
+                    su2double *dTdU, su2double *dTvedU, su2double *val_eves,
+                    su2double *val_Cvves);
+
   /*---------------------------------------*/
   /*---  Gradient Routines  ---*/
   /*---------------------------------------*/
@@ -348,24 +355,6 @@ public:
    * \brief Set all the primitive variables for compressible flows.
    */
   bool SetPrimVar(unsigned long iPoint, CFluidModel *FluidModel) override;
-
- /*!
-  * \brief Set all the primitive and secondary variables from the conserved vector.
-  */
-  bool Cons2PrimVar(su2double *U, su2double *V, su2double *dPdU,
-                    su2double *dTdU, su2double *dTvedU, su2double *val_eves,
-                    su2double *val_Cvves);
-
- /*!
-  * \brief Set all the conserved variables from the primitive vector..
-  */
-  void Prim2ConsVar(su2double *U, su2double *V);
-
- /*!
-  * \brief Check for unphysical points.
-  * \return Boolean value of physical point 
-  */
-  bool CheckNonPhys(su2double *V);
 
   /*---------------------------------------*/
   /*---   Specific variable routines    ---*/

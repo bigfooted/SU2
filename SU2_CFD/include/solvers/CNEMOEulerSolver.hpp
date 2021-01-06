@@ -82,6 +82,17 @@ public:
    */
   ~CNEMOEulerSolver(void) override;
 
+ /*!
+  * \brief Set all the conserved variables from the primitive vector..
+  */
+  void RecomputeConservativeVector(su2double *U, su2double *V);
+
+ /*!
+  * \brief Check for unphysical points.
+  * \return Boolean value of physical point
+  */
+  bool CheckNonPhys(su2double *V);
+
   /*!
    * \brief Set the maximum value of the eigenvalue.
    * \param[in] geometry - Geometrical definition of the problem.

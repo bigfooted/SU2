@@ -921,8 +921,8 @@ void CNEMOEulerSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_con
       /*--- Check for non-physical solutions after reconstruction. If found, use the
        cell-average value of the solution. This is a locally 1st order approximation,
        which is typically only active during the start-up of a calculation. ---*/
-      bool chk_err_i = nodes->CheckNonPhys(Primitive_i);
-      bool chk_err_j = nodes->CheckNonPhys(Primitive_j);
+      bool chk_err_i = CheckNonPhys(Primitive_i);
+      bool chk_err_j = CheckNonPhys(Primitive_j);
 
       nodes->SetNon_Physical(iPoint, chk_err_i);
       nodes->SetNon_Physical(jPoint, chk_err_j);
@@ -939,8 +939,8 @@ void CNEMOEulerSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_con
 
       /*--- Recompute Conserved variables if Roe or MSW scheme ---*/
       if ((config->GetKind_Upwind_Flow() == ROE) || (config->GetKind_Upwind_Flow() == MSW)){
-        if (!chk_err_i) nodes->Prim2ConsVar(Conserved_i,Primitive_i);
-        if (!chk_err_j) nodes->Prim2ConsVar(Conserved_j,Primitive_j);
+        if (!chk_err_i) Prim2ConsVar(Conserved_i,Primitive_i);
+        if (!chk_err_j) Prim2ConsVar(Conserved_j,Primitive_j);
       }
 
       /*--- If non-physical, revert to first order ---*/
@@ -1032,6 +1032,63 @@ su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(CNEMOGas *fluidmodel,
   val_gamma = fluidmodel->ComputeGamma();
 
   return val_gamma;
+}
+
+void CNEMOEulerSolver::RecomputeConservativeVector(su2double *U, const su2double *V) {
+
+  /*---Useful variables ---*/
+  vector<su2double> Energies, rhos;
+  rhos.resize(nSpecies,0.0);
+
+  /*--- Set densities and mass fraction ---*/
+  for (unsigned short iSpecies = 0; iSpecies < nSpecies; iSpecies++){
+    U[iSpecies]    = V[iSpecies];
+    rhos[iSpecies] = V[iSpecies];
+  }
+
+  /*--- Set momentum and compute v^2 ---*/
+  //TODO: geometry toolbox
+  su2double sqvel = 0.0;
+  for (unsigned short iDim = 0; iDim < nDim; iDim++){
+    U[nSpecies+iDim] = V[RHO_INDEX]*V[VEL_INDEX+iDim];
+    sqvel           += V[VEL_INDEX+iDim]*V[VEL_INDEX+iDim];
+  }
+
+  /*--- Set the fluidmodel and recompute energies ---*/
+  fluidmodel->SetTDStateRhosTTv( rhos, V[T_INDEX], V[TVE_INDEX]);
+  Energies = fluidmodel->ComputeMixtureEnergies();
+
+  /*--- Set conservative energies ---*/
+  U[nSpecies+nDim]   = V[RHO_INDEX]*(Energies[0]+0.5*sqvel);
+  U[nSpecies+nDim+1] = V[RHO_INDEX]*(Energies[1]);
+
+}
+
+bool CNEMOEulerSolver::CheckNonPhys(su2double *V) {
+
+  su2double Tmin, Tmax, Tvemin, Tvemax;
+
+  /*--- Set booleans ---*/
+  bool nonPhys = false;
+
+  /*--- Set temperature clipping values ---*/
+  Tmin   = 50.0; Tmax   = 8E4;
+  Tvemin = 50.0; Tvemax = 8E4;
+
+  /*--- Check whether state makes sense ---*/
+  for (unsigned short iSpecies = 0; iSpecies < nSpecies; iSpecies++)
+    if (V[RHOS_INDEX+iSpecies] < 0.0) nonPhys = true;
+
+  if (V[P_INDEX] < 0.0) nonPhys = true;
+
+  if (V[T_INDEX] < Tmin || V[T_INDEX] > Tmax) nonPhys = true;
+
+  if (V[TVE_INDEX] < Tvemin || V[TVE_INDEX] > Tvemax) nonPhys = true;
+
+  if (V[A_INDEX] < 0.0 ) nonPhys = true;
+
+  return nonPhys;
+
 }
 
 void CNEMOEulerSolver::Source_Residual(CGeometry *geometry, CSolver **solver_container, CNumerics **numerics_container, CConfig *config, unsigned short iMesh) {
@@ -1206,6 +1263,7 @@ void CNEMOEulerSolver::ExplicitEuler_Iteration(CGeometry *geometry, CSolver **so
 
   /*--- Compute the root mean square residual ---*/
   SetResidual_RMS(geometry, config);
+
 }
 
 void CNEMOEulerSolver::ExplicitRK_Iteration(CGeometry *geometry,CSolver **solver_container, CConfig *config, unsigned short iRKStep) {
