@@ -167,7 +167,7 @@ public:
    * \param[out] val_cvves - reconstructed cvve per species.
    * \param[out] Gamma - reconstructed gamma.
    */
-  static su2double ComputeConsistentExtrapolation(CNEMOGas *fluidmodel, unsigned short nSpecies, su2double *V,
+  static su2double ComputeConsistentExtrapolation(unsigned short nSpecies, su2double *V,
                                                   su2double* dPdU, su2double* dTdU, su2double* dTvedU,
                                                   su2double* val_eves, su2double* val_cvves);
   /*!

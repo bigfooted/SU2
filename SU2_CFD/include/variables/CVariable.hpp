@@ -1431,10 +1431,6 @@ public:
    */
   inline virtual bool Cons2PrimVar(CConfig *config, unsigned long iPoint, su2double *U, su2double *V, su2double *dPdU,
                                    su2double *dTdU, su2double *dTvedU) { return false; }
-  /*!
-   * \brief A virtual member.
-   */
-  inline virtual void Prim2ConsVar(CConfig *config, unsigned long iPoint, su2double *V, su2double *U) { }
 
   /*!
    * \brief A virtual member.

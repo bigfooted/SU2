@@ -939,8 +939,8 @@ void CNEMOEulerSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_con
 
       /*--- Recompute Conserved variables if Roe or MSW scheme ---*/
       if ((config->GetKind_Upwind_Flow() == ROE) || (config->GetKind_Upwind_Flow() == MSW)){
-        if (!chk_err_i) Prim2ConsVar(Conserved_i,Primitive_i);
-        if (!chk_err_j) Prim2ConsVar(Conserved_j,Primitive_j);
+        if (!chk_err_i) RecomputeConservativeVector(Conserved_i,Primitive_i);
+        if (!chk_err_j) RecomputeConservativeVector(Conserved_j,Primitive_j);
       }
 
       /*--- If non-physical, revert to first order ---*/
@@ -1070,6 +1070,14 @@ bool CNEMOEulerSolver::CheckNonPhys(su2double *V) {
 
   /*--- Set booleans ---*/
   bool nonPhys = false;
+
+  /*--- Set Indices ---*/
+  //Make these in a general location
+  unsigned short RHOS_INDEX    = nodes->GetRhosIndex();
+  unsigned short T_INDEX       = nodes->GetTIndex();
+  unsigned short TVE_INDEX     = nodes->GetTveIndex();
+  unsigned short P_INDEX       = nodes->GetPIndex();
+  unsigned short A_INDEX       = nodes->GetAIndex();
 
   /*--- Set temperature clipping values ---*/
   Tmin   = 50.0; Tmax   = 8E4;
