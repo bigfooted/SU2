@@ -85,7 +85,7 @@ public:
  /*!
   * \brief Set all the conserved variables from the primitive vector..
   */
-  void RecomputeConservativeVector(su2double *U, su2double *V);
+  void RecomputeConservativeVector(su2double *U, const su2double *V);
 
  /*!
   * \brief Check for unphysical points.

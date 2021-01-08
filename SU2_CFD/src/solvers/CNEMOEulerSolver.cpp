@@ -1020,7 +1020,7 @@ su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(unsigned short nSpeci
   }
 
   /*--- Set new fluid state ---*/
-  fluidmodel->SetTDStateRhosTTv(rhos, V[T_INDEX], V[TVE_INDEX]);
+  FluidModel->SetTDStateRhosTTv(rhos, V[T_INDEX], V[TVE_INDEX]);
 
   /*---Compute the secondary values ---*/
   auto it = val_eves;
