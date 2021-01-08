@@ -347,30 +347,3 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
 }
 
 void CNEMOEulerVariable::SetSolution_New() { Solution_New = Solution; }
-
-bool CNEMOEulerVariable::CheckNonPhys(su2double *V) {
-
-  su2double Tmin, Tmax, Tvemin, Tvemax;
-
-  /*--- Set booleans ---*/
-  bool nonPhys = false;
-
-  /*--- Set temperature clipping values ---*/
-  Tmin   = 50.0; Tmax   = 8E4;
-  Tvemin = 50.0; Tvemax = 8E4;
-
-  /*--- Check whether state makes sense ---*/
-  for (unsigned short iSpecies = 0; iSpecies < nSpecies; iSpecies++)
-    if (V[RHOS_INDEX+iSpecies] < 0.0) nonPhys = true;
-
-  if (V[P_INDEX] < 0.0) nonPhys = true;
-
-  if (V[T_INDEX] < Tmin || V[T_INDEX] > Tmax) nonPhys = true;
-
-  if (V[TVE_INDEX] < Tvemin || V[TVE_INDEX] > Tvemax) nonPhys = true;
-
-  if (V[A_INDEX] < 0.0 ) nonPhys = true;
-
-  return nonPhys;
-
-}
