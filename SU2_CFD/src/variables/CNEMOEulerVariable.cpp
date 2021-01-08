@@ -214,10 +214,8 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
                                       su2double *val_dTvedU, su2double *val_eves,
                                       su2double *val_Cvves) {
 
-  bool nonPhys;
   unsigned short iDim, iSpecies;
-  su2double rho, rhoE, rhoEve, rhoEve_min, rhoEve_max,
-  sqvel, rhoCvtr, rhoCvve, Tmin, Tmax, Tvemin, Tvemax;
+  su2double Tmin, Tmax, Tvemin, Tvemax;
   vector<su2double> rhos;
 
   rhos.resize(nSpecies,0.0);
@@ -227,15 +225,15 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
   // V: [rho1, ..., rhoNs, T, Tve, u, v, w, P, rho, h, a, rhoCvtr, rhoCvve]^T
 
   /*--- Set booleans ---*/
-  nonPhys = false;
+  bool nonPhys = false;
 
   /*--- Set temperature clipping values ---*/
   Tmin   = 50.0; Tmax   = 8E4;
   Tvemin = 50.0; Tvemax = 8E4;
 
   /*--- Rename variables for convenience ---*/
-  rhoE   = U[nSpecies+nDim];          // Density * energy [J/m3]
-  rhoEve = U[nSpecies+nDim+1];        // Density * energy_ve [J/m3]
+  su2double rhoE   = U[nSpecies+nDim];     // Density * energy [J/m3]
+  su2double rhoEve = U[nSpecies+nDim+1];   // Density * energy_ve [J/m3]
 
   /*--- Assign species & mixture density ---*/
   // Note: if any species densities are < 0, these values are re-assigned
@@ -255,10 +253,10 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
   }
 
   // Rename for convenience
-  rho = V[RHO_INDEX];
+  su2double rho = V[RHO_INDEX];
 
   /*--- Assign velocity^2 ---*/
-  sqvel = 0.0;
+  su2double sqvel = 0.0;
   for (iDim = 0; iDim < nDim; iDim++) {
     V[VEL_INDEX+iDim] = U[nSpecies+iDim]/V[RHO_INDEX];
     sqvel            += V[VEL_INDEX+iDim]*V[VEL_INDEX+iDim];
@@ -284,8 +282,8 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
 
   // Check for non-physical solutions
   if (!monoatomic){
-    rhoEve_min = 0.0;
-    rhoEve_max = 0.0;
+    su2double rhoEve_min = 0.0;
+    su2double rhoEve_max = 0.0;
     for (iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
       rhoEve_min += U[iSpecies] * eves_min[iSpecies];
       rhoEve_max += U[iSpecies] * eves_max[iSpecies];
@@ -318,8 +316,8 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
     val_Cvves[iSpecies] = cvves[iSpecies];
   }
 
-  rhoCvtr = fluidmodel->ComputerhoCvtr();
-  rhoCvve = fluidmodel->ComputerhoCvve();  
+  su2double rhoCvtr = fluidmodel->ComputerhoCvtr();
+  su2double rhoCvve = fluidmodel->ComputerhoCvve();
   
   V[RHOCVTR_INDEX] = rhoCvtr;
   V[RHOCVVE_INDEX] = rhoCvve;
