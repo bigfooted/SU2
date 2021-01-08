@@ -91,7 +91,7 @@ public:
   * \brief Check for unphysical points.
   * \return Boolean value of physical point
   */
-  bool CheckNonPhys(su2double *V);
+  bool CheckNonPhys(const su2double *V);
 
   /*!
    * \brief Set the maximum value of the eigenvalue.

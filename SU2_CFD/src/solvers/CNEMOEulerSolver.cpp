@@ -1070,7 +1070,7 @@ void CNEMOEulerSolver::RecomputeConservativeVector(su2double *U, const su2double
 
 }
 
-bool CNEMOEulerSolver::CheckNonPhys(su2double *V) {
+bool CNEMOEulerSolver::CheckNonPhys(const su2double *V) {
 
   su2double Tmin, Tmax, Tvemin, Tvemax;
 
