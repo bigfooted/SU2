@@ -279,8 +279,8 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
   }
   
   /*--- Vibrational-Electronic Temperature ---*/
-  vector<su2double> eves_min = fluidmodel->ComputeSpeciesEve(Tvemin);
-  vector<su2double> eves_max = fluidmodel->ComputeSpeciesEve(Tvemax);
+  const auto& eves_min = fluidmodel->ComputeSpeciesEve(Tvemin);
+  const auto& eves_max = fluidmodel->ComputeSpeciesEve(Tvemax);
 
   // Check for non-physical solutions
   if (!monoatomic){
@@ -310,8 +310,8 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
 
   // Determine other properties of the mixture at the current state  
   fluidmodel->SetTDStateRhosTTv(rhos, V[T_INDEX], V[TVE_INDEX]);
-  vector<su2double> cvves = fluidmodel->ComputeSpeciesCvVibEle(); 
-  vector<su2double> eves  = fluidmodel->ComputeSpeciesEve(V[TVE_INDEX]); 
+  const auto& cvves = fluidmodel->ComputeSpeciesCvVibEle();
+  const auto& eves  = fluidmodel->ComputeSpeciesEve(V[TVE_INDEX]);
 
   for (iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
     val_eves[iSpecies]  = eves[iSpecies];
