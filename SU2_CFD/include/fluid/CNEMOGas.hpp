@@ -185,7 +185,7 @@ public:
   /*!
    * \brief Get derivative of pressure w.r.t. conservative variables.
    */
-  void ComputedPdU(su2double *V, vector<su2double>& val_eves, su2double *val_dPdU);
+  void ComputedPdU(su2double *V, const vector<su2double>& val_eves, su2double *val_dPdU);
   
   /*!
    * \brief Get derivative of temperature w.r.t. conservative variables.
@@ -195,7 +195,7 @@ public:
   /*!
    * \brief Get derivative of vibrational temperature w.r.t. conservative variables.
    */
-  void ComputedTvedU(su2double *V, vector<su2double>& val_eves, su2double *val_dTvedU);
+  void ComputedTvedU(su2double *V, const vector<su2double>& val_eves, su2double *val_dTvedU);
 
   /*!
    * \brief Set the translational temperature.

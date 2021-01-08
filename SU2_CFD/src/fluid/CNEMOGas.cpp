@@ -159,7 +159,7 @@ su2double CNEMOGas::ComputerhoCvve() {
     return rhoCvve;
 }
 
-void CNEMOGas::ComputedPdU(su2double *V, vector<su2double>& val_eves, su2double *val_dPdU){
+void CNEMOGas::ComputedPdU(su2double *V, const vector<su2double>& val_eves, su2double *val_dPdU){
 
   // Note: Electron energy not included properly.
 
@@ -288,7 +288,7 @@ void CNEMOGas::ComputedTdU(su2double *V, su2double *val_dTdU){
 
 }    
 
-void CNEMOGas::ComputedTvedU(su2double *V, vector<su2double>& val_eves, su2double *val_dTvedU){
+void CNEMOGas::ComputedTvedU(su2double *V, const vector<su2double>& val_eves, su2double *val_dTvedU){
 
   su2double rhoCvve;
 
