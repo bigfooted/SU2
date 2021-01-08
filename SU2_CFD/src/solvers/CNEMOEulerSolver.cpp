@@ -60,6 +60,7 @@ CNEMOEulerSolver::CNEMOEulerSolver(CGeometry *geometry, CConfig *config,
   string filename_ = "flow";
 
   bool nonPhys;
+  vector<su2double> Energies_Inf;
 
   /*--- Store the multigrid level. ---*/
   MGLevel = iMesh;
@@ -234,7 +235,7 @@ CNEMOEulerSolver::CNEMOEulerSolver(CGeometry *geometry, CConfig *config,
     for (iDim = 0; iDim < nDim; iDim++){
       sqvel += Mvec_Inf[iDim]*Soundspeed_Inf * Mvec_Inf[iDim]*Soundspeed_Inf;
     }
-    auto& Energies_Inf = FluidModel->ComputeMixtureEnergies();
+    Energies_Inf = FluidModel->ComputeMixtureEnergies();
 
     /*--- Initialize Solution & Solution_Old vectors ---*/
     for (iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
@@ -1000,7 +1001,7 @@ void CNEMOEulerSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_con
 
 }
 
-su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(CNEMOGas *FluidModel, unsigned short nSpecies, su2double *V,
+su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(CNEMOGas *fluidmodel, unsigned short nSpecies, su2double *V,
                                                            su2double* dPdU, su2double* dTdU, su2double* dTvedU,
                                                            su2double* val_eves, su2double *val_Cvves) {
 
@@ -1019,16 +1020,16 @@ su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(CNEMOGas *FluidModel,
   }
 
   /*--- Set new fluid state ---*/
-  FluidModel->SetTDStateRhosTTv(rhos, V[T_INDEX], V[TVE_INDEX]);
+  fluidmodel->SetTDStateRhosTTv(rhos, V[T_INDEX], V[TVE_INDEX]);
 
   /*---Compute the secondary values ---*/
   auto it = val_eves;
-  auto& ref = FluidModel->ComputeSpeciesEve(V[TVE_INDEX]);
+  auto& ref = fluidmodel->ComputeSpeciesEve(V[TVE_INDEX]);
   for (auto v : ref) {
     *it = v;  ++it;
   }
   val_eves  = it;
-  val_gamma = FluidModel->ComputeGamma();
+  val_gamma = fluidmodel->ComputeGamma();
 
   return val_gamma;
 }
@@ -1036,7 +1037,7 @@ su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(CNEMOGas *FluidModel,
 void CNEMOEulerSolver::RecomputeConservativeVector(su2double *U, const su2double *V) {
 
   /*---Useful variables ---*/
-  vector<su2double> rhos;
+  vector<su2double> rhos, Energies;
   rhos.resize(nSpecies,0.0);
 
   /*--- Set Indices ---*/
@@ -1062,7 +1063,7 @@ void CNEMOEulerSolver::RecomputeConservativeVector(su2double *U, const su2double
 
   /*--- Set the fluidmodel and recompute energies ---*/
   FluidModel->SetTDStateRhosTTv( rhos, V[T_INDEX], V[TVE_INDEX]);
-  const auto& Energies = FluidModel->ComputeMixtureEnergies();
+  Energies = FluidModel->ComputeMixtureEnergies();
 
   /*--- Set conservative energies ---*/
   U[nSpecies+nDim]   = V[RHO_INDEX]*(Energies[0]+0.5*sqvel);
@@ -1413,6 +1414,7 @@ void CNEMOEulerSolver::SetNondimensionalization(CConfig *config, unsigned short 
   Density_FreeStreamND   = 0.0;
 
   su2double Velocity_FreeStreamND[3] = {0.0, 0.0, 0.0};
+  vector<su2double> energies;
 
   unsigned short iDim;
 
@@ -1483,7 +1485,7 @@ void CNEMOEulerSolver::SetNondimensionalization(CConfig *config, unsigned short 
   ModVel_FreeStream = sqrt(ModVel_FreeStream); config->SetModVel_FreeStream(ModVel_FreeStream);
 
   /*--- Calculate energies ---*/
-  auto& energies = FluidModel->ComputeMixtureEnergies();
+  energies = FluidModel->ComputeMixtureEnergies();
 
   /*--- Viscous initialization ---*/
   if (viscous) {
@@ -2322,7 +2324,7 @@ void CNEMOEulerSolver::BC_Outlet(CGeometry *geometry, CSolver **solution_contain
   unsigned long iVertex, iPoint;
   su2double Pressure, P_Exit, Velocity[3], Temperature, Tve, Velocity2, Entropy, Density,
   Riemann, Vn, SoundSpeed, Mach_Exit, Vn_Exit, Area, UnitNormal[3];
-  vector<su2double> rhos;
+  vector<su2double> rhos, energies;
 
   rhos.resize(nSpecies,0.0);
 
@@ -2460,7 +2462,7 @@ void CNEMOEulerSolver::BC_Outlet(CGeometry *geometry, CSolver **solution_contain
         V_outlet[RHOCVTR_INDEX] = FluidModel->ComputerhoCvtr();
         V_outlet[RHOCVVE_INDEX] = FluidModel->ComputerhoCvve();
 
-        auto& energies = FluidModel->ComputeMixtureEnergies();
+        energies = FluidModel->ComputeMixtureEnergies();
 
         /*--- Conservative variables, using the derived quantities ---*/
         for (iSpecies = 0; iSpecies < nSpecies; iSpecies ++){
