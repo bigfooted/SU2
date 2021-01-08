@@ -1024,12 +1024,12 @@ su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(unsigned short nSpeci
 
   /*---Compute the secondary values ---*/
   auto it = val_eves;
-  auto& ref = fluidmodel->ComputeSpeciesEve(V[TVE_INDEX]);
+  auto& ref = FluidModel->ComputeSpeciesEve(V[TVE_INDEX]);
   for (auto v : ref) {
     *it = v;  ++it;
   }
   val_eves  = it;
-  val_gamma = fluidmodel->ComputeGamma();
+  val_gamma = FluidModel->ComputeGamma();
 
   return val_gamma;
 }
@@ -1040,6 +1040,13 @@ void CNEMOEulerSolver::RecomputeConservativeVector(su2double *U, const su2double
   vector<su2double> Energies, rhos;
   rhos.resize(nSpecies,0.0);
 
+  /*--- Set Indices ---*/
+  //Make these in a general location
+  unsigned short RHO_INDEX = nodes->GetRhoIndex();
+  unsigned short T_INDEX   = nodes->GetTIndex();
+  unsigned short TVE_INDEX = nodes->GetTveIndex();
+  unsigned short VEL_INDEX = nodes->GetPIndex();
+  
   /*--- Set densities and mass fraction ---*/
   for (unsigned short iSpecies = 0; iSpecies < nSpecies; iSpecies++){
     U[iSpecies]    = V[iSpecies];
@@ -1055,8 +1062,8 @@ void CNEMOEulerSolver::RecomputeConservativeVector(su2double *U, const su2double
   }
 
   /*--- Set the fluidmodel and recompute energies ---*/
-  fluidmodel->SetTDStateRhosTTv( rhos, V[T_INDEX], V[TVE_INDEX]);
-  Energies = fluidmodel->ComputeMixtureEnergies();
+  FluidModel->SetTDStateRhosTTv( rhos, V[T_INDEX], V[TVE_INDEX]);
+  Energies = FluidModel->ComputeMixtureEnergies();
 
   /*--- Set conservative energies ---*/
   U[nSpecies+nDim]   = V[RHO_INDEX]*(Energies[0]+0.5*sqvel);
@@ -1073,11 +1080,11 @@ bool CNEMOEulerSolver::CheckNonPhys(su2double *V) {
 
   /*--- Set Indices ---*/
   //Make these in a general location
-  unsigned short RHOS_INDEX    = nodes->GetRhosIndex();
-  unsigned short T_INDEX       = nodes->GetTIndex();
-  unsigned short TVE_INDEX     = nodes->GetTveIndex();
-  unsigned short P_INDEX       = nodes->GetPIndex();
-  unsigned short A_INDEX       = nodes->GetAIndex();
+  unsigned short RHOS_INDEX = nodes->GetRhosIndex();
+  unsigned short T_INDEX    = nodes->GetTIndex();
+  unsigned short TVE_INDEX  = nodes->GetTveIndex();
+  unsigned short P_INDEX    = nodes->GetPIndex();
+  unsigned short A_INDEX    = nodes->GetAIndex();
 
   /*--- Set temperature clipping values ---*/
   Tmin   = 50.0; Tmax   = 8E4;
