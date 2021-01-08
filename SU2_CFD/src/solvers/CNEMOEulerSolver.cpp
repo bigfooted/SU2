@@ -934,8 +934,8 @@ void CNEMOEulerSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_con
       counter_local += chk_err_i + chk_err_j;
 
       /*--- Compute Secondary variables in a thermaodynamically consistent way. ---*/
-      if (!chk_err_i) Gamma_i = ComputeConsistentExtrapolation(nSpecies, Primitive_i, dPdU_i, dTdU_i, dTvedU_i, Eve_i, Cvve_i);
-      if (!chk_err_j) Gamma_j = ComputeConsistentExtrapolation(nSpecies, Primitive_j, dPdU_j, dTdU_j, dTvedU_j, Eve_j, Cvve_j);
+      if (!chk_err_i) Gamma_i = ComputeConsistentExtrapolation(GetFluidModel(), nSpecies, Primitive_i, dPdU_i, dTdU_i, dTvedU_i, Eve_i, Cvve_i);
+      if (!chk_err_j) Gamma_j = ComputeConsistentExtrapolation(GetFluidModel(), nSpecies, Primitive_j, dPdU_j, dTdU_j, dTvedU_j, Eve_j, Cvve_j);
 
       /*--- Recompute Conserved variables if Roe or MSW scheme ---*/
       if ((config->GetKind_Upwind_Flow() == ROE) || (config->GetKind_Upwind_Flow() == MSW)){
@@ -1001,7 +1001,7 @@ void CNEMOEulerSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_con
 
 }
 
-su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(unsigned short nSpecies, su2double *V,
+su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(CNEMOGas *FluidModel, unsigned short nSpecies, su2double *V,
                                                            su2double* dPdU, su2double* dTdU, su2double* dTvedU,
                                                            su2double* val_eves, su2double *val_Cvves) {
 
@@ -1020,7 +1020,7 @@ su2double CNEMOEulerSolver::ComputeConsistentExtrapolation(unsigned short nSpeci
   }
 
   /*--- Set new fluid state ---*/
-  CNEMOGas->SetTDStateRhosTTv(rhos, V[T_INDEX], V[TVE_INDEX]);
+  FluidModel->SetTDStateRhosTTv(rhos, V[T_INDEX], V[TVE_INDEX]);
 
   /*---Compute the secondary values ---*/
   auto it = val_eves;
