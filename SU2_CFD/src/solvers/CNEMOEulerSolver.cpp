@@ -939,8 +939,8 @@ void CNEMOEulerSolver::Upwind_Residual(CGeometry *geometry, CSolver **solver_con
 
       /*--- Recompute Conserved variables if Roe or MSW scheme ---*/
       if ((config->GetKind_Upwind_Flow() == ROE) || (config->GetKind_Upwind_Flow() == MSW)){
-        if (!chk_err_i) RecomputeConservativeVector(Conserved_i,Primitive_i);
-        if (!chk_err_j) RecomputeConservativeVector(Conserved_j,Primitive_j);
+        if (!chk_err_i) RecomputeConservativeVector(Conserved_i, Primitive_i);
+        if (!chk_err_j) RecomputeConservativeVector(Conserved_j, Primitive_j);
       }
 
       /*--- If non-physical, revert to first order ---*/
