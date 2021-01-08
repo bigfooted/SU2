@@ -229,7 +229,7 @@ public:
    * \brief Compute the pressure at the infinity.
    * \return Value of the pressure at the infinity.
    */
-  inline CNEMOGas* GetFluidModel(void) const final { return FluidModel;}
+  //inline CNEMOGas* GetFluidModel(void) const final { return FluidModel;}
 
   /*!
    * \brief Impose the far-field boundary condition using characteristics.
