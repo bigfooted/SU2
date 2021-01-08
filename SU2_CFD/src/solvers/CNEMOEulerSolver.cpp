@@ -234,7 +234,7 @@ CNEMOEulerSolver::CNEMOEulerSolver(CGeometry *geometry, CConfig *config,
     for (iDim = 0; iDim < nDim; iDim++){
       sqvel += Mvec_Inf[iDim]*Soundspeed_Inf * Mvec_Inf[iDim]*Soundspeed_Inf;
     }
-    const auto& Energies_Inf = FluidModel->ComputeMixtureEnergies();
+    auto& Energies_Inf = FluidModel->ComputeMixtureEnergies();
 
     /*--- Initialize Solution & Solution_Old vectors ---*/
     for (iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
@@ -1070,7 +1070,7 @@ void CNEMOEulerSolver::RecomputeConservativeVector(su2double *U, const su2double
 
 }
 
-bool CNEMOEulerSolver::CheckNonPhys(const su2double *V) {
+bool CNEMOEulerSolver::CheckNonPhys(su2double *V) {
 
   su2double Tmin, Tmax, Tvemin, Tvemax;
 
@@ -1088,6 +1088,7 @@ bool CNEMOEulerSolver::CheckNonPhys(const su2double *V) {
   /*--- Set temperature clipping values ---*/
   Tmin   = 50.0; Tmax   = 8E4;
   Tvemin = 50.0; Tvemax = 8E4;
+
 
   /*--- Check whether state makes sense ---*/
   for (unsigned short iSpecies = 0; iSpecies < nSpecies; iSpecies++)
@@ -1482,7 +1483,7 @@ void CNEMOEulerSolver::SetNondimensionalization(CConfig *config, unsigned short 
   ModVel_FreeStream = sqrt(ModVel_FreeStream); config->SetModVel_FreeStream(ModVel_FreeStream);
 
   /*--- Calculate energies ---*/
-  const auto& energies = FluidModel->ComputeMixtureEnergies();
+  auto& energies = FluidModel->ComputeMixtureEnergies();
 
   /*--- Viscous initialization ---*/
   if (viscous) {
@@ -2459,7 +2460,7 @@ void CNEMOEulerSolver::BC_Outlet(CGeometry *geometry, CSolver **solution_contain
         V_outlet[RHOCVTR_INDEX] = FluidModel->ComputerhoCvtr();
         V_outlet[RHOCVVE_INDEX] = FluidModel->ComputerhoCvve();
 
-        const auto& energies = FluidModel->ComputeMixtureEnergies();
+        auto& energies = FluidModel->ComputeMixtureEnergies();
 
         /*--- Conservative variables, using the derived quantities ---*/
         for (iSpecies = 0; iSpecies < nSpecies; iSpecies ++){
