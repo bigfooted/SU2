@@ -263,7 +263,7 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
   }
 
   /*--- Assign temperatures ---*/
-  vector<su2double> T = fluidmodel->ComputeTemperatures(rhos, rhoE, rhoEve, 0.5*rho*sqvel);
+  const auto& T = fluidmodel->ComputeTemperatures(rhos, rhoE, rhoEve, 0.5*rho*sqvel);
 
   /*--- Translational-Rotational Temperature ---*/
   V[T_INDEX] = T[0];
@@ -308,7 +308,7 @@ bool CNEMOEulerVariable::Cons2PrimVar(su2double *U, su2double *V,
 
   // Determine other properties of the mixture at the current state  
   fluidmodel->SetTDStateRhosTTv(rhos, V[T_INDEX], V[TVE_INDEX]);
-  vector<su2double> cvves = fluidmodel->ComputeSpeciesCvVibEle();
+  const auto& cvves = fluidmodel->ComputeSpeciesCvVibEle();
   vector<su2double> eves  = fluidmodel->ComputeSpeciesEve(V[TVE_INDEX]);
 
   for (iSpecies = 0; iSpecies < nSpecies; iSpecies++) {
